@@ -11,6 +11,9 @@ const app = express();
 
 const port = process.env.PORT || 8000;
 
+// middleware runs between req and res
+app.use(express.json()); // the middleware for parsing req.body
+
 app.use("/api/auth",authRoutes); // API for the authentication page
 
 app.listen(port, () => {
