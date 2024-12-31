@@ -26,12 +26,43 @@ export const signup = async (req, res) =>{
         }
 
         // Hashing / encrypting password using bcrypt
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt(10); // generates a random salt that is applied before hashing the password.The salt makes similar passwords to have different hashing
+        const hashedPassword = await bcrypt.hash(password, salt); // applying the hash and the salt to the salt
+
+        // creating the new user using the User model
+        const newUser = new User({
+            fullname:fullname,
+            username:username,
+            email:email,
+            password:hashedPassword,
+        });
+
+        if (newUser){
+            generateTokenAndSetCookie(newUser._id, res);
+            await newUser.save();
+
+            res.status(201).json({
+                message: "User created successfully",
+                _id: newUser._id,
+                fullname: newUser.fullname,
+                username: newUser.username,
+                email: newUser.email,
+                followers: newUser.followers,
+                following: newUser.following,
+                profileImage: newUser.profileImage,
+                coverImage: newUser.coverImage
+            });
+        }
+        else{
+            res.status(400).json({ error: "Failed to create user" });
+        }
     }
     catch(error){
+        console.log(`Error: ${error.message}`);
 
+        res.status(400).json({ error: "Invalid user data"});
     }
+
 };
 
 
