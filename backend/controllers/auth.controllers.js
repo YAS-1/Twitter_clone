@@ -38,7 +38,7 @@ export const signup = async (req, res) =>{
         });
 
         if (newUser){
-            generateTokenAndSetCookie(newUser._id, res);
+            generateTokenAndSetCookie(newUser._id, res); // The generated token is used to authenticate the user
             await newUser.save();
 
             res.status(201).json({
@@ -60,7 +60,7 @@ export const signup = async (req, res) =>{
     catch(error){
         console.log(`Error: ${error.message}`);
 
-        res.status(400).json({ error: "Invalid user data"});
+        res.status(500).json({ error: "Server error"});
     }
 
 };
