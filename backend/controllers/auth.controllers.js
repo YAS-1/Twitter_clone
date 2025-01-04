@@ -1,6 +1,7 @@
 
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs"; // For encrypting passwords
+import { generateTokenAndSetCookie } from "../lib/utils/generateToken.js";
 
 // function for the signup endpoint
 export const signup = async (req, res) =>{
@@ -58,7 +59,7 @@ export const signup = async (req, res) =>{
         }
     }
     catch(error){
-        console.log(`Error: ${error.message}`);
+        console.log(`Error in signup controller: ${error.message}`);
 
         res.status(500).json({ error: "Server error"});
     }
