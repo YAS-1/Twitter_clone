@@ -1,6 +1,7 @@
 
 import express from "express";
-import { signup, login, logout } from "../controllers/auth.controllers.js";
+import { getMe ,signup, login, logout } from "../controllers/auth.controllers.js";
+import { protectRoute } from "../middleware/protectRoute.js";
 
 
 const authRoutes = express.Router();
@@ -14,5 +15,6 @@ authRoutes.post("/login", login); // The login endpoint, which is a POST request
 
 authRoutes.post("/logout", logout); // The logout endpoint, which is a POST request that takes two parameters ie the path (/logout) and the request handler function(logout - imported from the auth.controllers.js file)
 
+authRoutes.get("/me", protectRoute, getMe); // The getMe endpoint, which is a GET request that takes two parameters ie the path (/me) and the request handler function(getMe - imported from the auth.controllers.js file)
 
 export default authRoutes;

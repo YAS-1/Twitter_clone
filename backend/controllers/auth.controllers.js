@@ -108,7 +108,26 @@ export const login = async (req, res) => {
 
 // function for the logout endpoint
 export const logout = async (req, res) => {
-    res.json({
-        message: 'Logout route working',
-    });
+    try{
+        res.cookie("jwt", "", {maxAge: 0}); // The cookie is set to expire immediately
+        res.status(200).json({message: 'Logout successful'});
+    }
+    catch(error){
+        console.log(`Error in logout controller: ${error.message}`);
+        res.status(500).json({ error: "Server error"});
+    }
 };
+
+
+
+// function for the profile endpoint
+export const getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select("-password"); // The user is found by their id and the password is excluded from the response
+        res.status(200).json(user); // The user is sent as a response
+    }
+    catch(error){
+        console.log(`Error in getMe controller: ${error.message}`);
+        res.status(500).json({ error: "Server error"});
+    }
+}
