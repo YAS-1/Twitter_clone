@@ -27,8 +27,12 @@ export const signup = async (req, res) =>{
         }
 
         // Hashing / encrypting password using bcrypt
+        if (password.length < 6){
+            return res.status(400).json({ error: "Password must be at least 6 characters long"});
+        }
         const salt = await bcrypt.genSalt(10); // generates a random salt that is applied before hashing the password.The salt makes similar passwords to have different hashing
-        const hashedPassword = await bcrypt.hash(password, salt); // applying the hash and the salt to the salt
+        const hashedPassword = await bcrypt.hash(password, salt); // applying the hash and the salt to the salt       
+
 
         // creating the new user using the User model
         const newUser = new User({
