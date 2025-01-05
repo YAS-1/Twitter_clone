@@ -73,9 +73,36 @@ export const signup = async (req, res) =>{
 
 // function for the login endpoint
 export const login = async (req, res) => {
-    res.json({
-        message: 'Login route working',
-    });
+    try{
+        const {username, password }= req.body; // The user is going to provide their details in the body
+        const user = await User.findOne({username}); // Checking if the entered username exists in the database
+        const isPasswordValid = await bcrypt.compare(password, user?.password || ''); // Comparing the entered password with the hashed password in the database
+
+        if (!user){
+            return res.status(400).json({error: "Invalid username"}); // If the username is incorrect
+        }
+        if (!isPasswordValid){
+            return res.status(400).json({error: "Invalid password"}); // If the password is incorrect
+        }
+
+        generateTokenAndSetCookie(user._id, res); // The generated token is used to authenticate the user
+
+        res.status(200).json({
+            message: "Login successful",
+            _id: user._id,
+            fullname: user.fullname,
+            username: user.username,
+            email: user.email,
+            followers: user.followers,
+            following: user.following,
+            profileImage: user.profileImage,
+            coverImage: user.coverImage
+        });
+    }
+    catch(error){
+        console.log(`Error in login controller: ${error.message}`);
+        res.status(500).json({ error: "Server error"});
+    }
 };
 
 
