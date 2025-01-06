@@ -1,9 +1,12 @@
+// Description: The main server file for the backend. It is responsible for setting up the server and connecting to the database. It also sets up the routes for the backend API.
 import express from "express";
 import dotenv from "dotenv";
 import connectMongoDB from "./db/connectMongodb.js";
-
-import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
+
+// import the routes
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 
 dotenv.config();
@@ -19,6 +22,7 @@ app.use(express.urlencoded({ extended: true })); // the middleware for parsing r
 app.use(cookieParser()); // the middleware for parsing cookies
 
 app.use("/api/auth",authRoutes); // API for the authentication page
+app.use("/api/user", userRoutes); // API for the user operations
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
