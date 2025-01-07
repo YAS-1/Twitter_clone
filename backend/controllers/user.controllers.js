@@ -25,8 +25,22 @@ export const getUserProfile = async (req, res) => {
 // function for the getSuggestedUsers endpoint
 export const getSuggestedUsers = async (req, res) => {
     try {
-        console.log("getSuggestedUsers controller");
-        res.status(200).json({ message: "getSuggestedUsers controller" });
+        const userId = req.user._id; // get the user id from the request object
+        const usersFollowedByMe =  await User.findById(userId).select("following"); // find the user by the id and select the following field
+
+        const users = await User.aggregate([ // get 10 random users from the database
+            {
+                $match:{_id: {$ne:userId}} // excludes the current userId --> filters out the current user $ne = not equal
+            },
+            { $sample: { size: 10 } } // gets 10 random users
+        ]);
+
+        const fliteredUsers = users.filter(user => !usersFollowedByMe.following.includes(user._id)); // iterates through the users and only retains the ids that are not in the following array of the current user
+        const suggestedUsers = fliteredUsers.slice(0, 5); // get the first 5 users from the filtered users
+
+        suggestedUsers.forEach(user => user.password = undefined); // exclude the password field from the suggested users
+
+        res.status(200).json({ users: suggestedUsers }); // return a 200 status code and the suggested users
     }
     catch(error){
         console.log(`Error in getSuggestedUsers controller: ${error.message}`);
