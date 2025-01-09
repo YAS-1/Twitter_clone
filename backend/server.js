@@ -8,6 +8,7 @@ import { v2 as cloudinary } from "cloudinary";
 // import the routes
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import postRoutes from "./routes/post.routes.js";
 
 
 dotenv.config();
@@ -19,19 +20,31 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+const port = process.env.PORT || 8000;
+
+
 const app = express();
 
-const port = process.env.PORT || 8000;
+
 
 // middleware runs between req and res
 app.use(express.json()); // the middleware for parsing req.body in json format
+
 app.use(express.urlencoded({ extended: true })); // the middleware for parsing req.body in urlencoded format
 
 app.use(cookieParser()); // the middleware for parsing cookies
 
+
+
+
+// routes
 app.use("/api/auth",authRoutes); // API for the authentication page
 app.use("/api/user", userRoutes); // API for the user operations
+app.use("/api/post", postRoutes); // API for the post operations
 
+
+
+// API for the post operations
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
     connectMongoDB();
