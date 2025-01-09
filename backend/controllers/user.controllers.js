@@ -1,3 +1,6 @@
+import bcrypt from "bcryptjs";
+import { v2 as cloudinary } from "cloudinary";
+
 import User from "../models/user.model.js";
 import Notification from "../models/notifications.js";
 
@@ -99,9 +102,66 @@ export const followUnFollowUser = async (req, res) => {
 
 // function for the updateUserProfile endpoint
 export const updateUserProfile = async (req, res) => {
+
+    const {fullname, email, username, currentPassword, newPassword, bio, link} = req.body; // get the fullname, email, username, currentPassword, newPassword, bio and link from the request body
+    let {profileImage, coverImage} = req.body; // get the profileImage and coverImage from the request body
+
+    const userId = req.user._id; // get the user id from the request object
     try {
-        console.log("updateUserProfile controller");
-        res.status(200).json({ message: "updateUserProfile controller" });
+        
+        let user = User.findById(userId); // find the user by the id
+        if(!user){
+            return res.status(404).json({ error: "User not found"}); // if the user is not found, return a 404 status code and an error message
+        }
+
+        // for updating password
+        if((currentPassword && !newPassword) || (newPassword && !currentPassword) ){
+            return res.status(400).json({ error: "Please enter both current and new password"}); // if the user enters only one of the current and new password
+        }
+        if( currentPassword && newPassword){
+            const isMatch = await bcrypt.compare(currentPassword, user.password); // compare the current password with the password in the database
+
+            if(!isMatch){
+                return res.status(400).json({ error: "Current password is incorrect"}); // if currentPassword doesn't match the password in the database
+            }
+
+            const salt = bcrypt.genSalt(10);
+            user.password = await bcrypt.hash( newPassword, salt);
+        }
+
+        // for updating the profile image
+        if(profileImage){
+            if (user.profileImage){
+                await cloudinary.uploader.destroy(user.profileImage.split("/").pop().split(".")[0]) // delete the previous profile image from cloudinary           
+            }
+
+            const uploadedImage = await cloudinary.uploader.upload(profileImage); // upload the profile image to cloudinary
+            profileImage = uploadedImage.secure_url; // set the profile image to the uploaded image url
+        }
+
+        // for updating the cover image
+        if(coverImage){
+            if (coverImage){
+                await cloudinary.uploader.destroy(user.coverImage.split("/").pop().split(".")[0]); // delete the previous cover image from cloudinary
+            }
+
+            const uploadedImage = await cloudinary.uploader.upload(coverImage); // upload the cover image to cloudinary
+            coverImage = uploadedImage.secure_url; // set the cover image to the uploaded image url
+        }
+
+        user.fullname = fullname || user.fullname; // set the fullname to the new fullname or the previous fullname
+        user.email = email || user.email; // set the email to the new email or the previous email
+        user.username = username || user.username; // set the username to the new username or the previous username
+        user.bio = bio || user.bio; // set the bio to the new bio or the previous bio
+        user.link = link || user.link; // set the link to the new link or the previous link
+        user.profileImage = profileImage || user.profileImage; // set the profileImage to the new profileImage or the previous profileImage
+        user.coverImage = coverImage || user.coverImage; // set the coverImage to the new coverImage or the previous coverImage
+
+        user.save(); // save the updated user document to the database
+
+        user.password = undefined; // exclude the password field from the user object
+
+        res.status(200).json({user}); // return a 200 status code and a success message
     }
     catch(error){
         console.log(`Error in updateUserProfile controller: ${error.message}`);
