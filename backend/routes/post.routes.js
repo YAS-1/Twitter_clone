@@ -1,6 +1,6 @@
 import express from 'express';
 import { protectRoute } from '../middleware/protectRoute.js';
-import { createPost, likeUnlikePost, commentOnPost, deletePost, getAllPosts, getLikedPosts } from '../controllers/post.controllers.js';
+import { createPost, likeUnlikePost, commentOnPost, deletePost, getAllPosts, getLikedPosts, getFollowingPosts, getUserPosts } from '../controllers/post.controllers.js';
 
 const postRoutes = express.Router();
 
@@ -14,8 +14,10 @@ postRoutes.delete("/delete/:id", protectRoute, deletePost); // API for deleting 
 
 postRoutes.get("/getAll", protectRoute, getAllPosts); // API for getting all posts
 
-postRoutes.get("/likes/:id", protectRoute, getLikedPosts); // API for getting all liked posts
+postRoutes.get("/likes/:id", protectRoute, getLikedPosts); // API for getting all the posts liked by a specific user
 
+postRoutes.get("/followingPosts", protectRoute, getFollowingPosts); // API for getting the posts of the users the current user follows
 
+postRoutes.get("/user/:username", protectRoute, getUserPosts); // API to get the posts of a specific user
 
 export default postRoutes;

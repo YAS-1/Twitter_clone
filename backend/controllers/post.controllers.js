@@ -170,25 +170,72 @@ export const getAllPosts = async (req, res) =>{
 
 
 
-// get liked posts
+// get posts liked by a specified user
 export const getLikedPosts = async (req, res) =>{
     try{
         const userId = req.params.id; // userId is got from the request parameter
         const user = await User.findById(userId);
-        const likedPost = await Post.find({ _id: {$in: user.likedPost}}).populate({path:"user",select:"-password"}).populate({path:"comments.user",select:"-password"}); // return all the post Ids that are with in the likedPost array of the user
+        const likedPost = await Post.find({ _id: {$in: user.likedPost}}).populate({path:"user",select:"-password"}).populate({path:"comments.user",select:"-password"}); // return all the postIds that are with in the likedPost array(stores postIds) of the user
 
         if(!user){
             return res.status(404).json({error: "User not found"}); 
         }
 
-        // if(likedPost.length === 0){
-        //     return res.status(200).json([]); 
-        // }
+        if(likedPost.length === 0){
+            return res.status(200).json([]); 
+        }
         res.status(200).json(likedPost);
 
     }
     catch(error){
         console.log(`Error in getLikedPosts controller: ${error.message}`);
+        res.status(500).json({ error: "Server error"});
+    }
+};
+
+
+
+
+// getting posts of the users the current user is following
+export const getFollowingPosts = async (req, res) =>{
+    try{
+        const userId = req.user._id; // the current user Id
+        const user =await User.findById(userId); // return the current user details
+
+        if(!user){
+            return res.status(404).json({error: "User not found"}); // if user returns a falsy value
+        }
+
+        const following = user.following; // returns the elements(userIds) stored in the current user's following array
+
+        const feedPosts = await Post.find({user: {$in: following}}).sort({ createdAt:-1}).populate({path:"user", select:"-password"}).populate({path:"comments.user", select:"-password"}); // returns userIds that are in Posts and also in following array
+
+        res.status(200).json(feedPosts);
+    }
+    catch(error){
+        console.log(`Error in getFollowingPosts controller: ${error.message}`);
+        res.status(500).json({ error: "Server error"});
+    }
+};
+
+
+
+// get a user's post
+export const getUserPosts = async (req, res) => {
+    try{
+        const username = req.params.username; // get the username from the request parameter
+        const user = await User.findOne({ username: username }); // find the user with the username
+
+        if(!user){
+            return res.status(404).json({error: "User not found"}); // if user isn't not found
+        }
+
+        const userPosts = await Post.find({user:user._id}).sort({createdAt:-1}).populate({path:"user", select:"-password"}).populate({path:"comments.user", select:"-password"}); // returns all the posts where the user is equal to to the user._id
+        res.status(200).json(userPosts); 
+
+    }
+    catch(error){
+        console.log(`Error in getUserPosts controller: ${error.message}`);
         res.status(500).json({ error: "Server error"});
     }
 }
