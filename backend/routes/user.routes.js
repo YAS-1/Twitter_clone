@@ -1,6 +1,6 @@
 import express from "express";
 import { protectRoute } from "../middleware/protectRoute.js";
-import { getUserProfile, getSuggestedUsers, followUnFollowUser, updateUserProfile } from "../controllers/user.controllers.js"; // Import the getUserProfile, getSuggestedUsers, followUnFollowUser and updateUserProfile functions from the user.controllers.js file
+import { getUserProfile, getSuggestedUsers, followUnFollowUser, updateUserProfile } from "../controllers/user.controller.js"; // Import the getUserProfile, getSuggestedUsers, followUnFollowUser and updateUserProfile functions from the user.controllers.js file
 
 
 const userRoutes = express.Router();

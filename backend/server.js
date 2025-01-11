@@ -9,6 +9,7 @@ import { v2 as cloudinary } from "cloudinary";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/post.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.use(cookieParser()); // the middleware for parsing cookies
 app.use("/api/auth",authRoutes); // API for the authentication page
 app.use("/api/user", userRoutes); // API for the user operations
 app.use("/api/post", postRoutes); // API for the post operations
+app.use("/api/notification", notificationRoutes); // API for the notification operations
 
 
 
