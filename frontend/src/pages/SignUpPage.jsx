@@ -9,6 +9,8 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast/headless";
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
@@ -19,22 +21,47 @@ const SignUpPage = () => {
 		password: "",
 	});
 
+	const { mutate, isError, isPending, error} = useMutation({
+		mutationFn: async({ email, username, fullName, password}) =>{
+			try{
+					const res = await fetch("/api/auth/signup", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({email, username, fullName, password}),
+					});
+
+
+					const data = res.json();
+					if (data.error) throw new Error(data.error);
+					console.log(data);
+					return data;
+			}
+			catch(error){
+				console.log(error);
+				toast.error(error.message);
+			}
+		}
+	}); //useMutation handles creating, updating and deleting data
+
+
 	const handleSubmit = (e) => {
 		// The handleSubmit displays the formData details in the console
 		e.preventDefault();
-		console.log(formData);
+		mutate(formData);
 	};
 
 	const handleInputChange = (e) => {
 		// Listens for an Onchange event in the input and sets what is entered in he value field to become the new value of specified property in the formData object
-		const { name, value } = e.target; // Use object destructing to extract the name and value fields of the whats triggering the event
+		const { name, value } = e.target; // Use object destructing to extract the name and value fields
 		setFormData((prevformData) => {
 			// The setFormData is used to update the value of the specified property in the formData
 			return { ...prevformData, [name]: value };
 		});
 	};
 
-	const isError = false;
+	
 
 	return (
 		<>
@@ -98,9 +125,9 @@ const SignUpPage = () => {
 							/>
 						</label>
 						<button className='btn rounded-full btn-primary text-white'>
-							Sign up
+							{isPending? "Loading...":"Sign Up"}
 						</button>
-						{isError && <p className='text-red-500'>Something went wrong</p>}
+						{isError && <p className='text-red-500'>{error.message}</p>}
 					</form>
 					<div className='flex flex-col lg:w-2/3 gap-2 mt-4'>
 						<p className='text-white text-lg'>Already have an account?</p>
