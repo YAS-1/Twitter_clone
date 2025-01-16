@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -23,7 +22,7 @@ const SignUpPage = () => {
 		password: "",
 	});
 
-	const { mutate, isError, isPending, error} = useMutation({
+	const { mutate:signMutation, isError, isPending, error} = useMutation({
 		mutationFn: async({ email, username, fullname, password}) =>{ // Sends the data to the specified endpoint
 			try{
 					const res = await fetch("/api/auth/signup", {
@@ -33,9 +32,10 @@ const SignUpPage = () => {
 						},
 						body: JSON.stringify({email, username, fullname, password}), // Convert the data to string when parsing it to the body
 					});
-
+					
 					const data = await res.json(); // data stores the json format of the response sent by the api
-					// if (data.error) throw new Error(data.error); // error is thrown if there is an error
+					if (!res.ok){ toast.error(data.error || "Failed to create Account")}
+					if (data.error) throw new Error(data.error); // error is thrown if there is an error
 					if (data){
 						toast.success("User created",{
 							position: "top-right",
@@ -46,7 +46,7 @@ const SignUpPage = () => {
 			}
 			catch(error){
 				console.log(error);
-				toast.error(error.message);
+				toast.error(error);
 			}
 		},
 		
@@ -56,7 +56,7 @@ const SignUpPage = () => {
 	const handleSubmit = (e) => {
 		// The handleSubmit displays the formData details in the console
 		e.preventDefault(); // Prevents the page from refreshing on submission
-		mutate(formData); // Sends the formData details to the backend via the useMutation 
+		signMutation(formData); // Sends the formData details to the backend via the useMutation 
 	};
 
 	const handleInputChange = (e) => {
