@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -10,31 +10,37 @@ import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast/headless";
+import { toast } from "react-toastify";
+
+
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
 		// Use the react useState Hook to create a form that stores user details
 		email: "",
 		username: "",
-		fullName: "",
+		fullname: "",
 		password: "",
 	});
 
 	const { mutate, isError, isPending, error} = useMutation({
-		mutationFn: async({ email, username, fullName, password}) =>{
+		mutationFn: async({ email, username, fullname, password}) =>{ // Sends the data to the specified endpoint
 			try{
 					const res = await fetch("/api/auth/signup", {
-						method: "POST",
+						method: "POST", // specifying thats its a post method
 						headers: {
-							"Content-Type": "application/json",
+							"Content-Type": "application/json", // json type of content
 						},
-						body: JSON.stringify({email, username, fullName, password}),
+						body: JSON.stringify({email, username, fullname, password}), // Convert the data to string when parsing it to the body
 					});
 
-
-					const data = res.json();
-					if (data.error) throw new Error(data.error);
+					const data = await res.json(); // data stores the json format of the response sent by the api
+					// if (data.error) throw new Error(data.error); // error is thrown if there is an error
+					if (data){
+						toast.success("User created",{
+							position: "top-right",
+						});
+					}
 					console.log(data);
 					return data;
 			}
@@ -42,14 +48,15 @@ const SignUpPage = () => {
 				console.log(error);
 				toast.error(error.message);
 			}
-		}
+		},
+		
 	}); //useMutation handles creating, updating and deleting data
 
 
 	const handleSubmit = (e) => {
 		// The handleSubmit displays the formData details in the console
-		e.preventDefault();
-		mutate(formData);
+		e.preventDefault(); // Prevents the page from refreshing on submission
+		mutate(formData); // Sends the formData details to the backend via the useMutation 
 	};
 
 	const handleInputChange = (e) => {
@@ -107,9 +114,9 @@ const SignUpPage = () => {
 									type='text'
 									className='grow'
 									placeholder='Full Name'
-									name='fullName'
+									name='fullname'
 									onChange={handleInputChange}
-									value={formData.fullName}
+									value={formData.fullname}
 								/>
 							</label>
 						</div>
