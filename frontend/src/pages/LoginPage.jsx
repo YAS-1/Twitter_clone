@@ -7,6 +7,7 @@ import x3d from "../images/x3d.png";
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
 import { toast } from "react-toastify";
+// import toast from "react-hot-toast";
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ const LoginPage = () => {
 
 				const data = await res.json();
 				if (!res.ok) {
-					toast.error(data.error || "Something went wrong", {position: "top-center",});}
+					toast.error(data.error || "Something went wrong", {position: "top-center"});}
 				if (data.error) throw new Error(data.error); // error is thrown if there is an error
 				if (data) {
 					toast.success(`Welcome ${data.username}`, {position: "top-center"});}
