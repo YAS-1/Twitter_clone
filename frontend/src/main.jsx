@@ -7,7 +7,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const queryClient = new QueryClient(); // creating a query client to access the properties of the react query library
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, //  to disable refetching
+    }
+  }
+}); // creating a query client to access the properties of the react query library
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
