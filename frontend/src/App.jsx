@@ -8,9 +8,27 @@ import NotificationPage from "./pages/notification/notification";
 import ProfilePage from "./pages/profile/ProfilePage";
 
 import { Toaster } from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 
 
 function App() {
+
+  // getting the user who is currently logged in
+  const { data, isLoading, error, isError} = useQuery({
+    queryKey: ["authUser"],
+    queryFn: async () => {
+      try {
+            const res =  await fetch ("/api/auth/me");
+            const data = res.json();
+
+            if (!res.ok){throw new Error(data.error || "Something went wrong");}
+            console.log("authUser is here", data);
+            return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    }
+  });
     return(
         <>
             <div className="flex mx-auto max-w-6xl">
