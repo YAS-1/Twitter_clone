@@ -15,7 +15,7 @@ import LoadingSpinner from "./components/common/LoadingSpinner";
 function App() {
 
   // getting the user who is currently logged in
-  const { data:authUser, isLoading, error, isError} = useQuery({
+  const { data:authUser, isLoading } = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
       try {
