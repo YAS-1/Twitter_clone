@@ -9,6 +9,7 @@ import { MdPassword } from "react-icons/md";
 import { toast } from "react-toastify";
 // import toast from "react-hot-toast";
 
+
 const LoginPage = () => {
 	const [formData, setFormData] = useState({
 		username: "",
@@ -37,6 +38,10 @@ const LoginPage = () => {
 			catch (error) {
 				toast.error(error, {position: "top-center"});
 			}
+		},
+		onSuccess: () => {
+			// login successful, redirect to homepage
+			queryClient.invalidateQueries({ queryKey: ["authUser"]});
 		}
 	});
 
