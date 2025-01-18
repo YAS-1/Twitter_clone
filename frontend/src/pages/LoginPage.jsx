@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import x3d from "../images/x3d.png";
 
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
 import { toast } from "react-toastify";
-// import toast from "react-hot-toast";
+
 
 
 const LoginPage = () => {
@@ -16,11 +16,13 @@ const LoginPage = () => {
 		password: "",
 	});
 
-	const { mutate:loginMutation } = useMutation({
-		mutationFn: async ({ username, password }) => {
+	const queryClient = useQueryClient(); // Hook from reactQuery
+
+	const { mutate:loginMutation } = useMutation({ // useMutation  hook from reactQuery
+		mutationFn: async ({ username, password }) => { // data to be parsed to the body
 			try{
 				// Your login API endpoint
-				const res = await fetch("/api/auth/login", {
+				const res = await fetch("/api/auth/login", { // the endpoint that we are fetching from the backend
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -45,7 +47,7 @@ const LoginPage = () => {
 		}
 	});
 
-	const handleSubmit = (e) => {
+	const handleSubmit = (e) => { // when clicked calls the loginMutation function with the details in the form data
 		e.preventDefault();
 		loginMutation(formData);
 		
