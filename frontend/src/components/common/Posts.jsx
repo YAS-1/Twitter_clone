@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 const Posts = ({feedType}) => {
 
 
-	const getPostEndPoint = () => {
+	const getPostEndPoint = () => { // Setting conditions to access specific endpoints
 		if(feedType == "forYou"){
 			return "api/post/getAll"
 		}
@@ -18,7 +18,7 @@ const Posts = ({feedType}) => {
 		}
 	}
 
-	const POST_ENDPOINT = getPostEndPoint();
+	const POST_ENDPOINT = getPostEndPoint(); // Storing the selected endpoint
 
 	const { data:posts, isLoading } = useQuery({
 		queryKey:["posts"],
