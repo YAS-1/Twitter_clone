@@ -22,7 +22,8 @@ const SignUpPage = () => {
 		password: "",
 	});
 
-	const { mutate:signMutation, isError, isPending, error} = useMutation({
+
+	const { mutate:signMutation, isError, isPending, error} = useMutation({ // useMutation is used to when we need to get data from the user
 		mutationFn: async({ email, username, fullname, password}) =>{ // Sends the data to the specified endpoint
 			try{
 					const res = await fetch("/api/auth/signup", {

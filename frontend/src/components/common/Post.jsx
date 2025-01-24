@@ -142,7 +142,7 @@ const Post = ({ post }) => {
 										isLiked ? "text-pink-500" : ""
 									}`}
 								>
-									{post.likes.length}
+								{post.like.length}
 								</span>
 							</div>
 						</div>

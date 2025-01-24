@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectMongoDB from "./db/connectMongodb.js";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary"; 
+import cors from "cors";
 
 // import the routes
 import authRoutes from "./routes/auth.routes.js";
@@ -12,7 +13,12 @@ import postRoutes from "./routes/post.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 
 
+const app = express();
+
+
 dotenv.config();
+
+app.use(cors());
 
 // configure cloudinary
 cloudinary.config({
@@ -21,12 +27,9 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const port = process.env.PORT || 8000;
 
-
-const app = express();
-
-
+// const PORT = process.env.PORT || 6002;
+const PORT = 6002;
 
 // middleware runs between req and res
 app.use(express.json()); // the middleware for parsing req.body in json format
@@ -47,7 +50,7 @@ app.use("/api/notification", notificationRoutes); // API for the notification op
 
 
 // API for the post operations
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
     connectMongoDB();
 });
