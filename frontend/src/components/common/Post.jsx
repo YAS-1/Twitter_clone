@@ -6,14 +6,41 @@ import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {avatars} from "../../avatars/avatars"
+import { useMutation, useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 
 const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
+
+	const {data:authUser} = useQuery({ queryKey: ["authUser"]});
+
+	const { mutate:deletePost, isPending } = useMutation({
+		mutationFn: async () => {
+			try {
+					const res = await fetch(`/api/post/delete/${post._id}`,{
+						method: "DELETE",
+					});
+					const data = await res.json();
+
+					if (!res.ok){
+						throw new Error(data.error || "Something went wrong");
+					}
+					return data;
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+		onSuccess: () => {
+			toast("Post deleted")
+		}	
+	})
+
 	const postOwner = post.user;
+
 	const isLiked = false;
 
-	const isMyPost = true;
+	const isMyPost = authUser._id === post.user._id;
 
 	const formattedDate = "1h";
 
