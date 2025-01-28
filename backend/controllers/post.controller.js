@@ -9,7 +9,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const createPost = async (req, res) =>{
     try{
         const { text } = req.body; // get the text from the request body
-        let { image } = req.body; // get the image from the request body
+        let { img } = req.body; // get the img from the request body
 
         const userId = req.user._id; // get the user id from the request object
         const user = await User.findById(userId); // find the user by id
@@ -18,19 +18,19 @@ export const createPost = async (req, res) =>{
             return res.status(404).json({ error: "User not found"});
         }
 
-        if(!text && !image){
-            return res.status(400).json({ error: "Please enter text or image"});
+        if(!text && !img){
+            return res.status(400).json({ error: "Please enter text or img"});
         }
 
-        if(image){
-            const uploadedImage = await cloudinary.uploader.upload(image);
-            image = uploadedImage.secure_url;
+        if(img){
+            const uploadedimg = await cloudinary.uploader.upload(img);
+            img = uploadedimg.secure_url;
         }
 
         const newPost = Post({
             user: userId,
             text,
-            image,
+            img,
         });
 
         await newPost.save(); // save the new post
@@ -134,9 +134,9 @@ export const deletePost = async (req, res) =>{
             return res.status(401).json({ error: "You are not authorized to delete this post"});
         }
 
-        if(post.image){
-            const imageId = post.image.split("/").pop().split(".")[0];
-            await cloudinary.uploader.destroy(imageId);
+        if(post.img){
+            const imgId = post.img.split("/").pop().split(".")[0];
+            await cloudinary.uploader.destroy(imgId);
         }
 
         await Post.findByIdAndDelete(postId); // delete the post
