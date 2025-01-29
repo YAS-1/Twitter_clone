@@ -1,9 +1,28 @@
 import { Link } from "react-router-dom";
 import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
-import { USERS_FOR_RIGHT_PANEL } from "../../utils/db/dummy";
+import { useQuery } from "@tanstack/react-query";
+
+import {avatars} from "../../avatars/avatars.js"
 
 const RightPanel = () => {
-	const isLoading = false;
+	
+	const {data: suggestedUsers, isLoading} = useQuery({
+		queryKey: ["suggestedUsers"],
+		queryFn: async () => {
+			try {
+				const res = await fetch ("/api/user/suggested");
+
+				const data = await res.json();
+
+				if (!res.ok){
+					throw new Error(data.message || 'something went wrong');
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error.message);
+			}
+		}
+	})
 
 	return (
 		<div className='hidden lg:block my-4 mx-2'>
@@ -20,7 +39,7 @@ const RightPanel = () => {
 						</>
 					)}
 					{!isLoading &&
-						USERS_FOR_RIGHT_PANEL?.map((user) => (
+						suggestedUsers?.map((user) => (
 							<Link
 								to={`/profile/${user.username}`}
 								className='flex items-center justify-between gap-4'
@@ -29,7 +48,7 @@ const RightPanel = () => {
 								<div className='flex gap-2 items-center'>
 									<div className='avatar'>
 										<div className='w-8 rounded-full'>
-											<img src={user.profileImg || "/avatar-placeholder.png"} />
+											<img src={user.profileImg || avatars.placeholder} />
 										</div>
 									</div>
 									<div className='flex flex-col'>
