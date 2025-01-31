@@ -38,12 +38,12 @@ export const getSuggestedUsers = async (req, res) => {
             { $sample: { size: 10 } } // gets 10 random users
         ]);
 
-        const fliteredUsers = users.filter(user => !usersFollowedByMe.following.includes(user._id)); // iterates through the users and only retains the ids that are not in the following array of the current user
-        const suggestedUsers = fliteredUsers.slice(0, 5); // get the first 5 users from the filtered users
+        const fliteredUsers = users.filter((user) => !usersFollowedByMe.following.includes(user._id)); // iterates through the users and only retains the ids that are not in the following array of the current user
+        const suggestedUsers = fliteredUsers.slice(0, 4); // get the first 5 users from the filtered users
 
-        suggestedUsers.forEach(user => user.password = undefined); // exclude the password field from the suggested users
+        suggestedUsers.forEach((user) => (user.password = undefined)); // exclude the password field from the suggested users
 
-        res.status(200).json({ users: suggestedUsers }); // return a 200 status code and the suggested users
+        res.status(200).json(suggestedUsers); // return a 200 status code and the suggested users
     }
     catch(error){
         console.log(`Error in getSuggestedUsers controller: ${error.message}`);
