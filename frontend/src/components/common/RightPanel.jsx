@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import {avatars} from "../../avatars/avatars.js"
+import useFollow from "../../hooks/useFollow.jsx";
+import LoadingSpinner from "../common/LoadingSpinner.jsx"
 
 const RightPanel = () => {
 	
@@ -30,6 +32,8 @@ const RightPanel = () => {
 	useEffect(() => {
 		console.log("API Response:", suggestedUsers);
 	}, [suggestedUsers]);
+
+	const {follow, isPending} = useFollow();
 	
 	if (suggestedUsers?.length === 0) return <div className = 'md:w-64 w-0'></div>
 
@@ -71,9 +75,12 @@ const RightPanel = () => {
 								<div>
 									<button
 										className='btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm'
-										onClick={(e) => e.preventDefault()}
+										onClick={(e) => {
+											e.preventDefault();
+											follow(user._id);
+										}}
 									>
-										Follow
+										{isPending ? <LoadingSpinner size="sm"/> : "Follow"}
 									</button>
 								</div>
 							</Link>
