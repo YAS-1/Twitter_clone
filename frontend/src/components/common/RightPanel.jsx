@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import {avatars} from "../../avatars/avatars.js"
 import useFollow from "../../hooks/useFollow.jsx";
-import LoadingSpinner from "../common/LoadingSpinner.jsx"
+import LoadingSpinner from "./LoadingSpinner.jsx";
 
 const RightPanel = () => {
 	

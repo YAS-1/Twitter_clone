@@ -73,13 +73,13 @@ export const followUnFollowUser = async (req, res) => {
         if( isFollowing ){
             //Unfollow the user
             await User.findByIdAndUpdate(currentUser._id, { $pull: { following: id }}); // remove the user id from the following array of the current user
-            await User.findByIdAndUpdate(id, { $pull: { followers:currentUser._id }}); // remove the current user id from the followers array of the user to modify
+            await User.findByIdAndUpdate(id, { $pull: { followers:req.user._id }}); // remove the current user id from the followers array of the user to modify
             res.status(200).json({ message: "User unfollowed" });
         }
         else{
             //Follow the user
             await User.findByIdAndUpdate(currentUser._id, { $push: { following: id }}); // add the user id to the following array of the current user
-            await User.findByIdAndUpdate(id, { $push:  {followers: currentUser._id }}); // add the current user id to the followers array of the user to modify
+            await User.findByIdAndUpdate(id, { $push:  {followers: req.user._id }}); // add the current user id to the followers array of the user to modify
 
             // create a notification
             const notification = new Notification({
