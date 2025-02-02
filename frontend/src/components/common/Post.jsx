@@ -23,7 +23,7 @@ const Post = ({ post }) => {
 
 	const queryClient = useQueryClient();
 
-	const { mutate:deletePost, isPending } = useMutation({ //for data updating cnd changing the state of data
+	const { mutate:deletePost, isPending: isDeleting } = useMutation({ //for data updating cnd changing the state of data
 		mutationFn: async () => {
 			try {
 					const res = await fetch(`/api/post/delete/${post._id}`,{
@@ -40,7 +40,7 @@ const Post = ({ post }) => {
 			}
 		},
 		onSuccess: () => {
-			toast("Post deleted");
+			toast.success("Post deleted");
 			queryClient.invalidateQueries(["posts"]); // invalidate the cache and refetch the data
 		}	
 	})
@@ -59,8 +59,14 @@ const Post = ({ post }) => {
 				return data;
 			} catch (error) {
 				throw new Error(error.message);
-				
 			}
+		},
+		onSuccess: ()=>{
+			toast.success("Post liked");
+			queryClient.invalidateQueries(["posts"]); // invalidate the cache and refetch the data
+		},
+		onError: (error)=>{
+			toast.error(error.message);
 		}
 	});
 
@@ -83,7 +89,8 @@ const Post = ({ post }) => {
 	};
 
 	const handleLikePost = () => {
-
+		if(isLiking) return;
+		likePost();
 	};
 
 	return (
@@ -106,9 +113,9 @@ const Post = ({ post }) => {
 						</span>
 						{isMyPost && (
 							<span className='flex justify-end flex-1'>
-								{!isPending && 
+								{!isDeleting && 
 								<FaTrash className='cursor-pointer hover:text-red-500' onClick={handleDeletePost} />}
-								{isPending && (
+								{isDeleting && (
 									<LoadingSpinner size="sm"/>
 								)}
 							</span>
