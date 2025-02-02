@@ -45,6 +45,25 @@ const Post = ({ post }) => {
 		}	
 	})
 
+	const {mutate:likePost, isPending:isLiking} = useMutation({
+		mutationFn:async()=>{
+			try {
+				const res = await fetch(`/api/post/like/${post._id}`,{
+					method: "POST",
+				});
+				const data = await res.json();
+
+				if(!res.ok){
+					throw new Error(data.error || "Something went wrong");
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error.message);
+				
+			}
+		}
+	});
+
 	const postOwner = post.user;
 
 	const isLiked = false;
@@ -63,7 +82,9 @@ const Post = ({ post }) => {
 		e.preventDefault();
 	};
 
-	const handleLikePost = () => {};
+	const handleLikePost = () => {
+
+	};
 
 	return (
 		<>
@@ -159,7 +180,7 @@ const Post = ({ post }) => {
 										/>
 										<button className='btn btn-primary rounded-full btn-sm text-white px-4'>
 											{isCommenting ? (
-												<span className='loading loading-spinner loading-md'></span>
+												<LoadingSpinner size="md"/>
 											) : (
 												"Post"
 											)}
@@ -181,8 +202,8 @@ const Post = ({ post }) => {
 								{isLiked && <FaRegHeart className='w-4 h-4 cursor-pointer text-pink-500 ' />}
 
 								<span
-									className={`text-sm text-slate-500 group-hover:text-pink-500 ${
-										isLiked ? "text-pink-500" : ""
+									className={`text-sm group-hover:text-pink-500 ${
+										isLiked ? "text-pink-500" : " text-slate-500"
 									}`}
 								>
 								{post.like.length}
