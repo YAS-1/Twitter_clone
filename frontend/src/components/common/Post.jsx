@@ -61,9 +61,17 @@ const Post = ({ post }) => {
 				throw new Error(error.message);
 			}
 		},
-		onSuccess: ()=>{
+		onSuccess: (updateLikes)=>{
 			toast.success("Post liked");
-			queryClient.invalidateQueries(["posts"]); // invalidate the cache and refetch the data
+			
+			queryClient.setQueryData(["posts"], (oldData) =>{
+				return oldData.map(p => {
+					if(p._id === post._id){
+						return {...p, like: updateLikes};
+					}
+					return p;
+				})
+			})
 		},
 		onError: (error)=>{
 			toast.error(error.message);

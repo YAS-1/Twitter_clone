@@ -55,13 +55,16 @@ export const likeUnlikePost = async (req, res) =>{
             return res.status(404).json({ error: "Post not found"});
         }
 
-        const LikedPost = post.like.includes(userId); // check if the user has already liked the post
+        const LikedPost = post.like.map(id => id.toString()).includes(userId); // check if the user has already liked the post
 
         if(LikedPost){
             // unlike the post
             await Post.updateOne({_id: postId}, {$pull: {like: userId}});// remove the user id from the like array
             await User.updateOne({_id: userId}, {$pull: {likedPost: postId}}); // remove the postId from the likedPost array on the user end
-            return res.status(200).json({ message: "Post unliked"});
+
+            const updatedLikes = post.like.filter((id) => id.toString() !== userId.toString());
+
+            return res.status(200).json(updatedLikes);
         }
         else{
             await Post.updateOne({_id: postId}, {$push: {like: userId}}); // add the user id to the like array
@@ -76,7 +79,9 @@ export const likeUnlikePost = async (req, res) =>{
 
             await notification.save(); // save the notification
 
-            return res.status(200).json({ message: "Post liked"});
+            const updatedLikes = post.like
+
+            return res.status(200).json(updatedLikes);
         }
     }
     catch(error){
