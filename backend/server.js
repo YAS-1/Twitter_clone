@@ -29,7 +29,7 @@ cloudinary.config({
 
 
 // const PORT = process.env.PORT || 6002;
-const PORT = 6002;
+const PORT = 6700;
 
 // middleware runs between req and res
 app.use(express.json({limit:"5mb"})); // the middleware for parsing req.body in json format
