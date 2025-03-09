@@ -44,7 +44,7 @@ export const signup = async (req, res) =>{
 
         if (newUser){
             generateTokenAndSetCookie(newUser._id, res); // The generated token is used to authenticate the user
-            await newUser.save();
+            await newUser.save(); // the new user is saved to the database
 
             res.status(201).json({
                 message: "User created successfully",
